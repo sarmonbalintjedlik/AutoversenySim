@@ -22,7 +22,7 @@ namespace AutoVerseny
 
         public Versenyzo InditVerseny()
         {
-            int korok = 5;
+            int korok = Palya.KorokSzama;
             Random random = new Random();
 
             for (int i = 1; i <= korok; i++)
@@ -37,7 +37,7 @@ namespace AutoVerseny
                     }
 
                     int sebesseg = random.Next(90, 130);
-                    if (random.Next(1, 10) > 8)
+                    if (random.Next(1, 10) > 9)
                     {
                         versenyzo.SzenvedBalesetet();
                         continue;
@@ -59,7 +59,7 @@ namespace AutoVerseny
             {
                 Console.WriteLine("Minden versenyző kiesett.");
             }
-            return nyertes;
+            return nyertes!;
         }
     }
 
