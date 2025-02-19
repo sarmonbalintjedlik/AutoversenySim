@@ -17,7 +17,4 @@ namespace AutoVerseny
             KorokSzama = korokSzama;
         }
     }
-
-
-
 }

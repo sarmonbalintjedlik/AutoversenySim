@@ -27,6 +27,7 @@ namespace AutoVerseny
 
             for (int i = 1; i <= korok; i++)
             {
+                Console.Clear();
                 Console.WriteLine($"\n-------------------\n{i}. KÖR:");
                 foreach (var versenyzo in Versenyzok)
                 {
@@ -37,6 +38,8 @@ namespace AutoVerseny
                     }
 
                     int sebesseg = random.Next(90, 130);
+                    versenyzo.OsszesitettTavolsag += sebesseg;
+
                     if (random.Next(1, 10) > 9)
                     {
                         versenyzo.SzenvedBalesetet();
@@ -44,25 +47,41 @@ namespace AutoVerseny
                     }
 
                     versenyzo.Auto.KopikGumi();
-                    Console.WriteLine($"{versenyzo.Nev} - Sebesség: {sebesseg} km/h, Gumi állapot: {versenyzo.Auto.GumiÁllapot}%");
+
+                    if (versenyzo.Auto.GumiÁllapot == 0)
+                    {
+                        versenyzo.Auto.CsereGumi();
+                        Console.WriteLine($"{versenyzo.Nev} - Boxkiállás - Gumi csere");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{versenyzo.Nev} - Sebesség: {sebesseg} km/h, Gumi állapot: {versenyzo.Auto.GumiÁllapot}%");
+                    }
                 }
 
-                if (i < korok)
+                Console.WriteLine("\nNyomj egy gombot a következő kör indításához...");
+                Console.ReadKey();
+            }
+
+            Versenyzo nyertes = null;
+
+            foreach (var versenyzo in Versenyzok)
+            {
+                if (!versenyzo.Kiszall && (nyertes == null || versenyzo.OsszesitettTavolsag > nyertes.OsszesitettTavolsag))
                 {
-                    Console.WriteLine("\nNyomj egy gombot a következő kör indításához...");
-                    Console.ReadKey();
+                    nyertes = versenyzo;
                 }
             }
 
-            var nyertes = Versenyzok.Find(v => !v.Kiszall);
             if (nyertes == null)
             {
                 Console.WriteLine("Minden versenyző kiesett.");
             }
-            return nyertes!;
+
+            return nyertes;
         }
+
+
+
     }
-
-
-
 }

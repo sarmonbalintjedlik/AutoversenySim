@@ -24,5 +24,10 @@ namespace AutoVerseny
             GumiÁllapot -= kopas;
             if (GumiÁllapot < 0) GumiÁllapot = 0;
         }
+
+        public void CsereGumi()
+        {
+            GumiÁllapot = 100;
+        }
     }
 }

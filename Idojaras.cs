@@ -15,6 +15,4 @@ namespace AutoVerseny
             Tipus = tipus;
         }
     }
-
-
 }

@@ -53,22 +53,40 @@ namespace AutoVerseny
         static void LetrehozVersenyzo()
         {
             Console.Clear();
-            Console.Write("Add meg a versenyző nevét: ");
-            string nev = Console.ReadLine()!;
-            if (string.IsNullOrWhiteSpace(nev))
+            string nev;
+
+            while (true)
             {
-                Console.WriteLine("A versenyző neve nem lehet üres!");
-                Console.ReadKey();
-                return;
+                Console.Write("Add meg a versenyző nevét: ");
+                nev = Console.ReadLine()!;
+
+                bool nevMarLetezik = false;
+                foreach (var versenyzo in versenyzok)
+                {
+                    if (versenyzo.Nev.ToLower() == nev.ToLower())
+                    {
+                        nevMarLetezik = true;
+                        break;
+                    }
+                }
+
+                if (nevMarLetezik)
+                {
+                    Console.WriteLine("Ez a név már foglalt, kérlek adj meg egy másikat.");
+                }
+                else
+                {
+                    break;
+                }
             }
 
             Console.Write("Add meg az autó márkáját: ");
             string autoMarka = Console.ReadLine()!;
-            if (string.IsNullOrWhiteSpace(autoMarka))
+
+            while (string.IsNullOrWhiteSpace(autoMarka))
             {
-                Console.WriteLine("Az autó márkája nem lehet üres!");
-                Console.ReadKey();
-                return;
+                Console.Write("Az autó márkáját nem hagyhatod üresen. Kérlek add meg: ");
+                autoMarka = Console.ReadLine()!;
             }
 
             versenyzok.Add(new Versenyzo(nev, new Auto(autoMarka)));
@@ -76,31 +94,75 @@ namespace AutoVerseny
             Console.ReadKey();
         }
 
-
         static void LetrehozPalya()
         {
             Console.Clear();
-            Console.Write("Add meg a pálya nevét: ");
-            string nev = Console.ReadLine()!;
-            if (string.IsNullOrWhiteSpace(nev))
+            string nev;
+
+            while (true)
             {
-                Console.WriteLine("A pálya neve nem lehet üres!");
-                Console.ReadKey();
-                return;
+                Console.Write("Add meg a pálya nevét: ");
+                nev = Console.ReadLine()!;
+
+                bool nevMarLetezik = false;
+                foreach (var palya in palyak)
+                {
+                    if (palya.Nev.ToLower() == nev.ToLower())
+                    {
+                        nevMarLetezik = true;
+                        break;
+                    }
+                }
+
+                if (nevMarLetezik)
+                {
+                    Console.WriteLine("Ez a pálya név már foglalt, kérlek adj meg egy másikat.");
+                }
+                else
+                {
+                    break;
+                }
             }
 
-            Console.Write("Hány körös legyen a pálya? ");
             int korok;
-            while (!int.TryParse(Console.ReadLine(), out korok) || korok <= 0)
+            Console.Write("Hány körös legyen a pálya? ");
+
+            while (true)
             {
-                Console.Write("Érvénytelen szám. Adj meg egy pozitív egész számot: ");
+                string korokInput = Console.ReadLine()!;
+
+                bool isValidKorok = true;
+                foreach (char c in korokInput)
+                {
+                    if (c < '0' || c > '9')
+                    {
+                        isValidKorok = false;
+                        break;
+                    }
+                }
+
+                if (isValidKorok && korokInput.Length > 0)
+                {
+                    korok = Convert.ToInt32(korokInput);
+                    if (korok > 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.Write("A számnak pozitívnak kell lennie, próbáld újra: ");
+                    }
+                }
+                else
+                {
+                    Console.Write("Érvénytelen szám. Adj meg egy pozitív egész számot: ");
+                }
             }
 
             palyak.Add(new Palya(nev, korok));
             Console.WriteLine("Pálya hozzáadva!");
             Console.ReadKey();
         }
-
 
         static void TorolElem()
         {
@@ -163,7 +225,6 @@ namespace AutoVerseny
             Console.ReadKey();
         }
 
-
         static void Listazas()
         {
             Console.Clear();
@@ -198,17 +259,34 @@ namespace AutoVerseny
                 Console.WriteLine($"{i + 1}. {palyak[i].Nev} - {palyak[i].KorokSzama} kör");
             }
             Console.Write("Válassz egy pályát (1 - {0}): ", palyak.Count);
-            int valasztottPalya;
-            while (!int.TryParse(Console.ReadLine(), out valasztottPalya) || valasztottPalya < 1 || valasztottPalya > palyak.Count)
+            int valasztottPalya = 0;
+            string bemenet = Console.ReadLine()!;
+
+            while (bemenet == null || bemenet.Trim() == "" || !CsakSzamE(bemenet) ||
+                   (valasztottPalya = Convert.ToInt32(bemenet)) < 1 || valasztottPalya > palyak.Count)
             {
                 Console.Write("Érvénytelen választás. Adj meg egy érvényes számot: ");
+                bemenet = Console.ReadLine()!;
             }
+
 
             var verseny = new Verseny(versenyzok, palyak[valasztottPalya - 1], new Idojaras("Napos"));
             var nyertes = verseny.InditVerseny();
 
             Console.WriteLine("\nA verseny győztese: " + (nyertes != null ? nyertes.Nev : "Nincs nyertes, mindenki kiesett!"));
             Console.ReadKey();
+        }
+
+        static bool CsakSzamE(string szoveg)
+        {
+            for (int i = 0; i < szoveg.Length; i++)
+            {
+                if (szoveg[i] < '0' || szoveg[i] > '9')
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

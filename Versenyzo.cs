@@ -12,6 +12,7 @@ namespace AutoVerseny
         public Auto Auto { get; set; }
         public bool Baleset { get; set; }
         public bool Kiszall { get; set; }
+        public int OsszesitettTavolsag { get; set; }
 
         public Versenyzo(string nev, Auto auto)
         {
@@ -19,6 +20,7 @@ namespace AutoVerseny
             Auto = auto;
             Baleset = false;
             Kiszall = false;
+            OsszesitettTavolsag = 0;
         }
 
         public void SzenvedBalesetet()
@@ -27,7 +29,6 @@ namespace AutoVerseny
             Kiszall = true;
             Console.WriteLine($"{Nev} balesetet szenvedett és kiesett a versenyből!");
         }
-
         public void Folytathatja()
         {
             if (!Baleset)
