@@ -1,9 +1,5 @@
-﻿using AutoVerseny;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutoVerseny
 {
@@ -29,59 +25,84 @@ namespace AutoVerseny
             {
                 Console.Clear();
                 Console.WriteLine($"\n-------------------\n{i}. KÖR:");
+
                 foreach (var versenyzo in Versenyzok)
                 {
                     if (versenyzo.Kiszall)
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"{versenyzo.Nev} már kiesett a versenyből.");
+                        Console.ResetColor();
                         continue;
                     }
 
                     int sebesseg = random.Next(90, 130);
-                    versenyzo.OsszesitettTavolsag += sebesseg;
-
-                    if (random.Next(1, 10) > 9)
+                    if (random.Next(1, 10001) <= 1)
                     {
                         versenyzo.SzenvedBalesetet();
                         continue;
                     }
 
                     versenyzo.Auto.KopikGumi();
+                    Console.WriteLine($"{versenyzo.Nev} - Sebesség: {sebesseg} km/h, Gumi állapot: {versenyzo.Auto.GumiÁllapot}%");
+
+                    if (versenyzo.Auto.GumiÁllapot < 20)
+                    {
+                        if (random.Next(1, 10001) <= 1)
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkRed;
+                            Console.WriteLine($"{versenyzo.Nev} DNF-t kapott, mert a gumi állapota kritikus alá csökkent!");
+                            Console.ResetColor();
+                            versenyzo.SzenvedBalesetet();
+                            continue;
+                        }
+                    }
 
                     if (versenyzo.Auto.GumiÁllapot == 0)
                     {
-                        versenyzo.Auto.CsereGumi();
-                        Console.WriteLine($"{versenyzo.Nev} - Boxkiállás - Gumi csere");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"{versenyzo.Nev} - Sebesség: {sebesseg} km/h, Gumi állapot: {versenyzo.Auto.GumiÁllapot}%");
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"{versenyzo.Nev} boxba megy a gumi cseréjére.");
+                        Console.ResetColor();
+                        versenyzo.Auto.GumiÁllapot = 100;
+
+                        int dnfEsely = random.Next(1, 101);
+                        if (dnfEsely <= 20)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"{versenyzo.Nev} DNF-t kapott! A versenyző kiesett.");
+                            Console.ResetColor();
+                            versenyzo.SzenvedBalesetet();
+                        }
                     }
                 }
 
-                Console.WriteLine("\nNyomj egy gombot a következő kör indításához...");
-                Console.ReadKey();
-            }
-
-            Versenyzo nyertes = null;
-
-            foreach (var versenyzo in Versenyzok)
-            {
-                if (!versenyzo.Kiszall && (nyertes == null || versenyzo.OsszesitettTavolsag > nyertes.OsszesitettTavolsag))
+                if (i < korok)
                 {
-                    nyertes = versenyzo;
+                    Console.WriteLine("\nNyomj egy gombot a következő kör indításához...");
+                    Console.ReadKey();
                 }
             }
 
+            ResetAll();
+
+            var nyertes = Versenyzok.Find(v => !v.Kiszall);
             if (nyertes == null)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Minden versenyző kiesett.");
+                Console.ResetColor();
             }
-
-            return nyertes;
+            return nyertes!;
         }
 
-
-
+        public void ResetAll()
+        {
+            foreach (var versenyzo in Versenyzok)
+            {
+                versenyzo.Kiszall = false;
+                versenyzo.Baleset = false;
+                versenyzo.Auto.GumiÁllapot = 100;
+            }
+        }
     }
 }

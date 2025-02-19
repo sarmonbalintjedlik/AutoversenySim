@@ -7,6 +7,7 @@ namespace AutoVerseny
     {
         static List<Versenyzo> versenyzok = new List<Versenyzo>();
         static List<Palya> palyak = new List<Palya>();
+        static int menuIndex = 0;
 
         static void Main(string[] args)
         {
@@ -14,41 +15,58 @@ namespace AutoVerseny
             {
                 Console.Clear();
                 Console.WriteLine("---------- VERSENY SZIMULATOR ----------\n");
-                Console.WriteLine("1. Versenyző létrehozás");
-                Console.WriteLine("2. Pálya létrehozás");
-                Console.WriteLine("3. Versenyző, pálya elvétele");
-                Console.WriteLine("4. Versenyzők és pályák listázása");
-                Console.WriteLine("5. Futam elkezdése");
-                Console.WriteLine("6. Kilépés");
-                Console.Write("Válassz egy menüpontot: ");
-                string valasztas = Console.ReadLine()!;
+                MenuKiiras();
 
-                switch (valasztas)
+                string input = Console.ReadLine()!;
+
+                if (int.TryParse(input, out menuIndex) && menuIndex >= 1 && menuIndex <= 6)
                 {
-                    case "1":
-                        LetrehozVersenyzo();
-                        break;
-                    case "2":
-                        LetrehozPalya();
-                        break;
-                    case "3":
-                        TorolElem();
-                        break;
-                    case "4":
-                        Listazas();
-                        break;
-                    case "5":
-                        KezdVerseny();
-                        break;
-                    case "6":
-                        return;
-                    default:
-                        Console.WriteLine("Érvénytelen választás. Nyomj egy gombot a folytatáshoz...");
-                        Console.ReadKey();
-                        break;
+                    switch (menuIndex)
+                    {
+                        case 1:
+                            LetrehozVersenyzo();
+                            break;
+                        case 2:
+                            LetrehozPalya();
+                            break;
+                        case 3:
+                            TorolElem();
+                            break;
+                        case 4:
+                            Listazas();
+                            break;
+                        case 5:
+                            KezdVerseny();
+                            break;
+                        case 6:
+                            return;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Érvénytelen választás! Kérlek válassz egy számot a menüből (1-6).");
+                    Console.ReadKey();
                 }
             }
         }
+
+        static void MenuKiiras()
+        {
+            string[] menuItems = {
+        "1. Versenyző létrehozás",
+        "2. Pálya létrehozás",
+        "3. Versenyző, pálya elvétele",
+        "4. Versenyzők és pályák listázása",
+        "5. Futam elkezdése",
+        "6. Kilépés"
+    };
+            foreach (var item in menuItems)
+            {
+                Console.WriteLine(item);
+            }
+            Console.Write("Választás: ");
+        }
+
 
         static void LetrehozVersenyzo()
         {
@@ -60,23 +78,30 @@ namespace AutoVerseny
                 Console.Write("Add meg a versenyző nevét: ");
                 nev = Console.ReadLine()!;
 
-                bool nevMarLetezik = false;
-                foreach (var versenyzo in versenyzok)
+                if (string.IsNullOrWhiteSpace(nev))
                 {
-                    if (versenyzo.Nev.ToLower() == nev.ToLower())
-                    {
-                        nevMarLetezik = true;
-                        break;
-                    }
-                }
-
-                if (nevMarLetezik)
-                {
-                    Console.WriteLine("Ez a név már foglalt, kérlek adj meg egy másikat.");
+                    Console.WriteLine("A név nem lehet üres. Kérlek, adj meg egy nevet.");
                 }
                 else
                 {
-                    break;
+                    bool nevMarLetezik = false;
+                    foreach (var versenyzo in versenyzok)
+                    {
+                        if (versenyzo.Nev.ToLower() == nev.ToLower())
+                        {
+                            nevMarLetezik = true;
+                            break;
+                        }
+                    }
+
+                    if (nevMarLetezik)
+                    {
+                        Console.WriteLine("Ez a név már foglalt, kérlek adj meg egy másikat.");
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -104,23 +129,30 @@ namespace AutoVerseny
                 Console.Write("Add meg a pálya nevét: ");
                 nev = Console.ReadLine()!;
 
-                bool nevMarLetezik = false;
-                foreach (var palya in palyak)
+                if (string.IsNullOrWhiteSpace(nev))
                 {
-                    if (palya.Nev.ToLower() == nev.ToLower())
-                    {
-                        nevMarLetezik = true;
-                        break;
-                    }
-                }
-
-                if (nevMarLetezik)
-                {
-                    Console.WriteLine("Ez a pálya név már foglalt, kérlek adj meg egy másikat.");
+                    Console.WriteLine("A pálya név nem lehet üres. Kérlek, adj meg egy nevet.");
                 }
                 else
                 {
-                    break;
+                    bool nevMarLetezik = false;
+                    foreach (var palya in palyak)
+                    {
+                        if (palya.Nev.ToLower() == nev.ToLower())
+                        {
+                            nevMarLetezik = true;
+                            break;
+                        }
+                    }
+
+                    if (nevMarLetezik)
+                    {
+                        Console.WriteLine("Ez a pálya név már foglalt, kérlek adj meg egy másikat.");
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -131,27 +163,9 @@ namespace AutoVerseny
             {
                 string korokInput = Console.ReadLine()!;
 
-                bool isValidKorok = true;
-                foreach (char c in korokInput)
+                if (int.TryParse(korokInput, out korok) && korok > 0)
                 {
-                    if (c < '0' || c > '9')
-                    {
-                        isValidKorok = false;
-                        break;
-                    }
-                }
-
-                if (isValidKorok && korokInput.Length > 0)
-                {
-                    korok = Convert.ToInt32(korokInput);
-                    if (korok > 0)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        Console.Write("A számnak pozitívnak kell lennie, próbáld újra: ");
-                    }
+                    break;
                 }
                 else
                 {
@@ -174,7 +188,8 @@ namespace AutoVerseny
             {
                 Console.Write("Add meg a versenyző nevét: ");
                 string nev = Console.ReadLine()!;
-                var versenyzo = null as Versenyzo;
+                Versenyzo versenyzo = null!;
+
                 foreach (var v in versenyzok)
                 {
                     if (v.Nev == nev)
@@ -198,7 +213,8 @@ namespace AutoVerseny
             {
                 Console.Write("Add meg a pálya nevét: ");
                 string nev = Console.ReadLine()!;
-                var palya = null as Palya;
+                Palya palya = null!;
+
                 foreach (var p in palyak)
                 {
                     if (p.Nev == nev)
@@ -258,35 +274,43 @@ namespace AutoVerseny
             {
                 Console.WriteLine($"{i + 1}. {palyak[i].Nev} - {palyak[i].KorokSzama} kör");
             }
-            Console.Write("Válassz egy pályát (1 - {0}): ", palyak.Count);
-            int valasztottPalya = 0;
+            Console.Write($"Válassz egy pályát (1 - {palyak.Count}): ");
             string bemenet = Console.ReadLine()!;
 
-            while (bemenet == null || bemenet.Trim() == "" || !CsakSzamE(bemenet) ||
-                   (valasztottPalya = Convert.ToInt32(bemenet)) < 1 || valasztottPalya > palyak.Count)
+            bool isValid = true;
+            int valasztottPalya = 0;
+
+            for (int i = 0; i < bemenet.Length; i++)
             {
-                Console.Write("Érvénytelen választás. Adj meg egy érvényes számot: ");
-                bemenet = Console.ReadLine()!;
-            }
-
-
-            var verseny = new Verseny(versenyzok, palyak[valasztottPalya - 1], new Idojaras("Napos"));
-            var nyertes = verseny.InditVerseny();
-
-            Console.WriteLine("\nA verseny győztese: " + (nyertes != null ? nyertes.Nev : "Nincs nyertes, mindenki kiesett!"));
-            Console.ReadKey();
-        }
-
-        static bool CsakSzamE(string szoveg)
-        {
-            for (int i = 0; i < szoveg.Length; i++)
-            {
-                if (szoveg[i] < '0' || szoveg[i] > '9')
+                if (bemenet[i] < '0' || bemenet[i] > '9')
                 {
-                    return false;
+                    isValid = false;
+                    break;
                 }
             }
-            return true;
+
+            if (isValid)
+            {
+                for (int i = 0; i < bemenet.Length; i++)
+                {
+                    valasztottPalya = valasztottPalya * 10 + (bemenet[i] - '0');
+                }
+            }
+
+            if (isValid && valasztottPalya >= 1 && valasztottPalya <= palyak.Count)
+            {
+                var verseny = new Verseny(versenyzok, palyak[valasztottPalya - 1], new Idojaras("Napos"));
+                var nyertes = verseny.InditVerseny();
+
+                Console.WriteLine("\nA verseny győztese: " + (nyertes != null ? nyertes.Nev : "Nincs nyertes, mindenki kiesett!"));
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.WriteLine("Érvénytelen pálya választás! Kérlek válassz egy számot a menüből.");
+                Console.ReadKey();
+            }
         }
+
     }
 }
